@@ -11,6 +11,8 @@
   <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License">
 </p>
 
+[![Trending Repos](https://trending-repos.com/badge/virgiliojr94/book-to-skill.svg)](https://trending-repos.com/repositories/virgiliojr94/book-to-skill)
+
 <p align="center">
   <a href="#-why">Why</a> ·
   <a href="#-what-it-generates">What it generates</a> ·
