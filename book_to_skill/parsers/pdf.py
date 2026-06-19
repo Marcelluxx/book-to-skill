@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -9,6 +10,7 @@ def extract_with_pdftotext(pdf_path: str) -> str | None:
     if not shutil.which("pdftotext"):
         return None
     try:
+        pdf_path = os.path.abspath(pdf_path)
         result = subprocess.run(
             ["pdftotext", "-layout", pdf_path, "-"],
             capture_output=True, text=True, timeout=120
@@ -80,6 +82,7 @@ def count_pages(pdf_path: str) -> int:
     # Try pdfinfo first
     if shutil.which("pdfinfo"):
         try:
+            pdf_path = os.path.abspath(pdf_path)
             result = subprocess.run(
                 ["pdfinfo", pdf_path], capture_output=True, text=True, timeout=15
             )
