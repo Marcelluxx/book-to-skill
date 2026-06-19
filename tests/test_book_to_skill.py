@@ -858,6 +858,32 @@ class TestDocxExtraction:
         assert result["format"] == "docx"
         assert "DOCX test paragraph" in result["text"]
 
+    def test_extract_docx_xxe_rejection(self, tmp_path):
+        """Verify that a DOCX with malicious DTD or entity declarations is rejected."""
+        from book_to_skill.parsers.docx import extract_docx
+        
+        # Create a malicious DOCX
+        ns = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+        xml = textwrap.dedent(f"""\
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <!DOCTYPE w:document [
+              <!ENTITY xxe SYSTEM "file:///etc/passwd">
+            ]>
+            <w:document xmlns:w="{ns}">
+              <w:body>
+                <w:p><w:r><w:t>&xxe;</w:t></w:r></w:p>
+              </w:body>
+            </w:document>
+        """)
+        bad_docx = tmp_path / "malicious.docx"
+        with zipfile.ZipFile(bad_docx, "w") as zf:
+            zf.writestr("word/document.xml", xml)
+            zf.writestr("[Content_Types].xml", '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>')
+            
+        with pytest.raises(ExtractionError, match="Security validation failed"):
+            extract_docx(str(bad_docx))
+
+
 
 class TestResolveInputFiles:
     """Additional edge-case tests for resolve_input_files."""
